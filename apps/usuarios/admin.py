@@ -7,7 +7,7 @@ from django.urls import path
 import pandas as pd
 
 from .forms import BulkUserUploadForm, ValidarForm
-from .models import Area, HistorialMedico, Role, Usuario
+from .models import Area, HistorialMedico, Role, Usuario, ContactoEmergencia
 from django.contrib.admin import AdminSite
 from django.conf import settings
 import re
@@ -29,6 +29,11 @@ class SitioAdminSoloSuperusuarios(AdminSite):
 
 admin_site = SitioAdminSoloSuperusuarios(name='miadmin')
 
+class ContactoEmergenciaLine(admin.TabularInline):
+    model = ContactoEmergencia
+    extra = 0
+    fields = ('nombre', 'parentesco', 'telefono')
+    readonly_fields = ('creado',)
 
 class UsuarioAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     """
@@ -44,6 +49,9 @@ class UsuarioAdmin(ExtraButtonsMixin, admin.ModelAdmin):
     list_filter = ('role', 'is_staff') #Filtros disponibles en la barra lateral.
     search_fields = ('clave', 'email', 'nombres',) #Campos que pueden ser buscados desde el buscador.
     form = ValidarForm  #vincula el formulario de las validaciones de fechas, claves, carreras y rol
+    
+    inlines = [ContactoEmergenciaLine]
+
     def save_model(self, request, obj, form, change):
         if not change:
             # Si no se proporciona una contraseña, se asigna una por defecto
@@ -227,7 +235,15 @@ class AreaAdmin(admin.ModelAdmin):
     ordering = ('carrera_o_puesto',)
     list_filter = ('carrera_o_puesto',)
 
+class ContactoEmergenciaAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'parentesco', 'telefono', 'paciente', 'creado')
+    search_fields = ('nombre', 'telefono', 'paciente__clave', 'paciente__nombres')
+    list_filter = ('parentesco',)
+    ordering = ('-creado',)
+
+
 admin.site.register(Usuario, UsuarioAdmin)
 admin.site.register(HistorialMedico, HistorialAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(Area, AreaAdmin)
+admin.site.register(ContactoEmergencia, ContactoEmergenciaAdmin)
