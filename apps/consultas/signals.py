@@ -14,33 +14,33 @@ from .models import Consulta, SignosVitales, CategoriaPadecimiento
 @receiver(post_migrate)
 def crear_motivos_de_consultas(sender, **kwargs):
     """
-    Esta función se ejecuta automáticamente después de las migraciones para crear los motivos de consulta 
+    Esta función se ejecuta automáticamente después de las migraciones para crear los motivos de consulta
     predefinidos en la base de datos. Los motivos se definen como categorías de padecimientos comunes que
     los pacientes podrían tener al visitar a un médico.
     """
-    
+
     # Lista de padecimientos o motivos comunes de consulta
     padecimientos = [
         "IRAS",  # Infecciones respiratorias agudas
         "GASTROINTESTINALES",  # Problemas gastrointestinales
         "CONTROL PRENATAL",  # Control de embarazo
         "CEFALEA",  # Dolores de cabeza
-        "QUEMADURAS",  
-        "LESIONES/HERIDAS", 
-        "MORDEDURA DE PERRO",  
+        "QUEMADURAS",
+        "LESIONES/HERIDAS",
+        "MORDEDURA DE PERRO",
         "OTROS",  # Otros padecimientos no especificados
-        "HIPERTENSIÓN",  
-        "DIABETES MELLITUS",  
-        "OBESIDAD", 
-        "ALERGIAS", 
-        "CARDIOVASCULARES",  
-        "NEUROLÓGICOS",  
-        "ANSIEDAD",  
+        "HIPERTENSIÓN",
+        "DIABETES MELLITUS",
+        "OBESIDAD",
+        "ALERGIAS",
+        "CARDIOVASCULARES",
+        "NEUROLÓGICOS",
+        "ANSIEDAD",
         "GINECOLÓGICO",  # Problemas ginecológicos
         "OFTALMICO",  # Problemas de visión
-        "MUSCULOESQUELETICO", 
+        "MUSCULOESQUELETICO",
         "SINCOPE",  # Desmayos o pérdida temporal de la conciencia
-        "ASESORÍA", # Consultas para orientación general
+        "ASESORÍA",  # Consultas para orientación general
     ]
 
     # Iterar sobre la lista de padecimientos y crear una categoría de padecimiento para cada uno
