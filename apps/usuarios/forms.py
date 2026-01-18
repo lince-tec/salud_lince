@@ -70,24 +70,9 @@ class LoginForm(forms.Form):
         return clave
 
     def clean_password(self):
-        """
-        Valida que la contraseña tenga al menos:
-        - Una letra mayúscula
-        - Una letra minúscula
-        - Un número
-        - Un carácter especial
-        - Longitud entre 8 y 15 caracteres
-
-        Raises:
-            ValidationError: Si la contraseña no cumple con los requisitos.
-        Returns:
-            str: Contraseña validada.
-        """
         password = self.cleaned_data.get('password')
-        token_password = r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&ñ_])[A-Za-z\d@$!%*#?&ñ_]{8,15}$'
-
-        if not re.match(token_password, password):
-            raise forms.ValidationError("Contraseña inválida.")
+        if not password:
+            raise forms.ValidationError("Ingresa tu contraseña.")
         return password
 
 
@@ -129,7 +114,7 @@ class ValidarForm(forms.ModelForm):
         errores = []
         edad = None
 
-        # 🔹 Calcula edad
+        # Calcula edad
         if fecha_nacimiento:
             edad = date.today().year - fecha_nacimiento.year
             if (date.today().month, date.today().day) < (fecha_nacimiento.month, fecha_nacimiento.day):
@@ -137,14 +122,14 @@ class ValidarForm(forms.ModelForm):
         if rol and rol.nombre_rol == 'paciente' and edad is not None and edad < 15:
             self.add_error('fecha_nacimiento', "Fecha de nacimiento no válida.")
 
-        # 🔹 Validación de coherencia entre rol y carrera
+        # Validación de coherencia entre rol y carrera
         if rol:
             if rol.nombre_rol.lower() == "medico" and carrera and carrera.carrera_o_puesto != "Médico":
                 self.add_error('carrera_o_puesto', "El rol Médico solo puede pertenecer al área Médica.")
             elif rol.nombre_rol.lower() == "administrador" and carrera and carrera.carrera_o_puesto != "ADMINISTRATIVO":
                 self.add_error('carrera_o_puesto', "El rol Administrador debe pertenecer al área Administrativo.")
 
-        # 🔹 Validación de clave y área
+        # Validación de clave y área
         if clave.startswith("II") and carrera and "INDUSTRIAL" not in carrera.carrera_o_puesto.upper():
             self.add_error('clave', "La clave 'II' corresponde a Ingeniería Industrial.")
         elif clave.startswith("ISC") and carrera and "SISTEMAS" not in carrera.carrera_o_puesto.upper():
