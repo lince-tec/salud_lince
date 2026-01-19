@@ -1,9 +1,6 @@
-import re
-
 from django.contrib import messages
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -12,11 +9,14 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django_ratelimit.decorators import ratelimit
 from django.utils import timezone
+from django.contrib.auth import password_validation
+from django.core.exceptions import ValidationError
 from datetime import datetime, timedelta
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-
+import re
+from django.core.validators import RegexValidator
 
 from apps.consultas.models import CategoriaPadecimiento, Consulta, SignosVitales
 
@@ -301,6 +301,7 @@ def cambiar_contrasena_view(request):
     """
     if request.method == "POST":  # Solo se ejecuta si la solicitud es de tipo POST
         # Obtención de las contraseñas ingresadas por el usuario desde el formulario
+<<<<<<< HEAD
         current_password = request.POST.get("current_password")
         new_password = request.POST.get("new_password")
         confirm_password = request.POST.get("confirm_password")
@@ -338,6 +339,32 @@ def cambiar_contrasena_view(request):
                 "informacion.html",
                 {"informacion": request.user, "error": error_message},
             )
+=======
+        current_password = request.POST.get('current_password',)
+        new_password = request.POST.get('new_password',)
+        confirm_password = request.POST.get('confirm_password',)
+        
+        # Verificación de que la contraseña actual ingresada por el usuario sea correcta
+        if not request.user.check_password(current_password):
+            messages.error(request, 'La contraseña actual es incorrecta.')
+            return redirect("informacion")
+
+        # Verificación de que la nueva contraseña y la confirmación coincidan
+        if new_password != confirm_password:
+            messages.error( request, 'Las contraseñas no coinciden.')
+            return redirect("informacion")
+        
+        try:
+            password_validation.validate_password(new_password, user=request.user)
+        except ValidationError as ve:
+            for msg in ve.messages:
+                messages.error(request, msg)
+            return redirect("informacion")
+        
+        if request.user.check_password(new_password):
+            messages.error(request, "La nueva contraseña no puede ser la igual a la actual.")
+            return redirect("informacion")
+>>>>>>> dev2
 
         # Si todo es correcto, se cambia la contraseña del usuario
         request.user.set_password(new_password)
