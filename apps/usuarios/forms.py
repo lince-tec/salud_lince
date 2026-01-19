@@ -83,30 +83,9 @@ class LoginForm(forms.Form):
         return clave
 
     def clean_password(self):
-<<<<<<< HEAD
-        """
-        Valida que la contraseña tenga al menos:
-        - Una letra mayúscula
-        - Una letra minúscula
-        - Un número
-        - Un carácter especial
-        - Longitud entre 8 y 15 caracteres
-
-        Raises:
-            ValidationError: Si la contraseña no cumple con los requisitos.
-        Returns:
-            str: Contraseña validada.
-        """
-        password = self.cleaned_data.get("password")
-        token_password = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&ñ_])[A-Za-z\d@$!%*#?&ñ_]{8,15}$"
-
-        if not re.match(token_password, password):
-            raise forms.ValidationError("Contraseña inválida.")
-=======
         password = self.cleaned_data.get('password')
         if not password:
             raise forms.ValidationError("Ingresa tu contraseña.")
->>>>>>> dev2
         return password
 
 
@@ -181,72 +160,6 @@ class ValidarForm(forms.ModelForm):
                     "El rol Administrador debe pertenecer al área Administrativo.",
                 )
 
-<<<<<<< HEAD
-        # 🔹 Validación de clave y área
-        if (
-            clave.startswith("II")
-            and carrera
-            and "INDUSTRIAL" not in carrera.carrera_o_puesto.upper()
-        ):
-            self.add_error(
-                "clave", "La clave 'II' corresponde a Ingeniería Industrial."
-            )
-        elif (
-            clave.startswith("ISC")
-            and carrera
-            and "SISTEMAS" not in carrera.carrera_o_puesto.upper()
-        ):
-            self.add_error(
-                "clave",
-                "La clave 'ISC' corresponde a Ingeniería en Sistemas Computacionales.",
-            )
-        elif (
-            clave.startswith("IM")
-            and carrera
-            and "MECATRÓNICA" not in carrera.carrera_o_puesto.upper()
-        ):
-            self.add_error(
-                "clave", "La clave 'IM' corresponde a Ingeniería Mecatrónica."
-            )
-        elif (
-            clave.startswith("IB")
-            and carrera
-            and "BIOQUÍMICA" not in carrera.carrera_o_puesto.upper()
-        ):
-            self.add_error(
-                "clave", "La clave 'IB' corresponde a Ingeniería Bioquímica."
-            )
-        elif (
-            clave.startswith("IE")
-            and carrera
-            and "ELECTROMECÁNICA" not in carrera.carrera_o_puesto.upper()
-        ):
-            self.add_error(
-                "clave", "La clave 'IE' corresponde a Ingeniería Electromecánica."
-            )
-        elif (
-            clave.startswith("LG")
-            and carrera
-            and "GASTRONOMÍA" not in carrera.carrera_o_puesto.upper()
-        ):
-            self.add_error(
-                "clave", "La clave 'LG' corresponde a Licenciatura en Gastronomía."
-            )
-        elif (
-            clave.startswith("MI")
-            and carrera
-            and "M. EN INGENIERÍA" not in carrera.carrera_o_puesto.upper()
-        ):
-            self.add_error(
-                "clave", "La clave 'MI' corresponde a la Maestría en Ingeniería"
-            )
-        elif (
-            clave.startswith("MIA")
-            and carrera
-            and "MAESTRÍA EN IA" not in carrera.carrera_o_puesto.upper()
-        ):
-            self.add_error("clave", "La clave 'MIA' corresponde a MAESTRÍA en IA.")
-=======
         # Validación de clave y área
         if clave.startswith("II") and carrera and "INDUSTRIAL" not in carrera.carrera_o_puesto.upper():
             self.add_error('clave', "La clave 'II' corresponde a Ingeniería Industrial.")
@@ -264,7 +177,6 @@ class ValidarForm(forms.ModelForm):
             self.add_error('clave', "La clave 'MI' corresponde a la Maestría en Ingeniería")
         elif clave.startswith("MIA") and carrera and "MAESTRÍA EN IA" not in carrera.carrera_o_puesto.upper():
             self.add_error('clave', "La clave 'MIA' corresponde a MAESTRÍA en IA.")
->>>>>>> dev2
         # elif clave.startswith("am") and carrera and "MÉDICO" not in carrera.carrera_o_puesto.upper():
         #   self.add_error('clave', "La clave 'am' corresponde al área Médica.")
 

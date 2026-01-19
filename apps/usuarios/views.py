@@ -301,49 +301,10 @@ def cambiar_contrasena_view(request):
     """
     if request.method == "POST":  # Solo se ejecuta si la solicitud es de tipo POST
         # Obtención de las contraseñas ingresadas por el usuario desde el formulario
-<<<<<<< HEAD
-        current_password = request.POST.get("current_password")
-        new_password = request.POST.get("new_password")
-        confirm_password = request.POST.get("confirm_password")
-        # Validación de la nueva contraseña con expresión regular (mínimo 8 y máximo 15 caracteres,
-        # debe incluir al menos una letra mayúscula, un número y un carácter especial)
-        if not re.match(
-            r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,15}$",
-            new_password,
-        ):
-            messages.error(request, "Contraseña inválida")
-            return redirect("informacion")  # Redirige si no cumple con los requisitos
-
-        # Validación para la confirmación de la nueva contraseña
-        if not re.match(
-            r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,15}$",
-            confirm_password,
-        ):
-            messages.error(request, "Contraseña inválida")
-            return redirect("informacion")  # Redirige si no cumple con los requisitos
-
-        # Verificación de que la contraseña actual ingresada por el usuario sea correcta
-        if not request.user.check_password(current_password):
-            error_message = "La contraseña actual es incorrecta."
-            return render(
-                request,
-                "informacion.html",
-                {"informacion": request.user, "error": error_message},
-            )
-
-        # Verificación de que la nueva contraseña y la confirmación coincidan
-        if new_password != confirm_password:
-            error_message = "Las contraseñas no coinciden."
-            return render(
-                request,
-                "informacion.html",
-                {"informacion": request.user, "error": error_message},
-            )
-=======
         current_password = request.POST.get('current_password',)
         new_password = request.POST.get('new_password',)
         confirm_password = request.POST.get('confirm_password',)
-        
+
         # Verificación de que la contraseña actual ingresada por el usuario sea correcta
         if not request.user.check_password(current_password):
             messages.error(request, 'La contraseña actual es incorrecta.')
@@ -353,18 +314,17 @@ def cambiar_contrasena_view(request):
         if new_password != confirm_password:
             messages.error( request, 'Las contraseñas no coinciden.')
             return redirect("informacion")
-        
+
         try:
             password_validation.validate_password(new_password, user=request.user)
         except ValidationError as ve:
             for msg in ve.messages:
                 messages.error(request, msg)
             return redirect("informacion")
-        
+
         if request.user.check_password(new_password):
             messages.error(request, "La nueva contraseña no puede ser la igual a la actual.")
             return redirect("informacion")
->>>>>>> dev2
 
         # Si todo es correcto, se cambia la contraseña del usuario
         request.user.set_password(new_password)
