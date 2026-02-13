@@ -2,6 +2,7 @@ from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
 import os
+from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,9 +15,9 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', default=False) == 'True'
+DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','web-production-d53e3.up.railway.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','web-production-b3d8.up.railway.app']
 
 # Application definition
 
@@ -75,7 +76,7 @@ WSGI_APPLICATION = 'sistema_medico.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+#https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 if DEBUG:
     print("Estas en modo DEBUG con la base de datos local")
@@ -108,6 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS':{'min_length': 12},
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -174,10 +176,18 @@ STORAGES = {
 }
 
 
-CSRF_TRUSTED_ORIGINS = ['http://*', 'https://web-production-d53e3.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['http://*', 'https://web-production-b3d8.up.railway.app']
 
 
 DEFAULT_PASSWORD = os.getenv('DEFAULT_PASSWORD')
 
 LOGIN_REDIRECT_URL = '/'  # redirige a la página principal al iniciar sesión
 LOGOUT_REDIRECT_URL = '/'  # redirige a la página principal al cerrar sesión
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'secondary',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}
