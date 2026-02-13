@@ -2,6 +2,8 @@ from datetime import datetime
 
 from admin_extra_buttons.api import ExtraButtonsMixin, button
 from django.contrib import admin, messages
+from django.contrib.auth import password_validation
+from django.core.exceptions import ValidationError
 from django.shortcuts import redirect, render
 from django.urls import path
 import pandas as pd
@@ -71,9 +73,13 @@ class UsuarioAdmin(ExtraButtonsMixin, admin.ModelAdmin):
             # Si no se proporciona una contraseña, se asigna una por defecto
             password = form.cleaned_data.get("password")
             if not password:
-                password = (
-                    settings.DEFAULT_PASSWORD
-                )  # Cambia esto por la contraseña que desees
+                password = settings.DEFAULT_PASSWORD  # Cambia esto por la contraseña que desees
+            try:
+                password_validation.validate_password(password, user=obj)
+            except ValidationError as ve:
+                for msg in ve.messages:
+                    messages.error(request, msg)
+                return
             obj.set_password(password)
 
         super().save_model(request, obj, form, change)
@@ -142,15 +148,6 @@ class UsuarioAdmin(ExtraButtonsMixin, admin.ModelAdmin):
                                 else str(valor_pas).strip()
                             )
 
-                            # Validar contraseña
-                            token_password = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%#?&ñ_])[A-Za-z\d@$!%#?&ñ_]{8,15}$"
-                            if not re.match(token_password, pas):
-                                messages.error(
-                                    request,
-                                    f"Fila {index + 1}: La contraseña no cumple con el formato.",
-                                )
-                                continue
-
                             # Obtener área y rol
                             area_obj = Area.objects.get(
                                 carrera_o_puesto=row.get("carrera_o_puesto")
@@ -182,6 +179,14 @@ class UsuarioAdmin(ExtraButtonsMixin, admin.ModelAdmin):
                                 carrera_o_puesto_id=row.get("carrera_o_puesto", None),
                                 role_id=role_obj.nombre_rol,
                             )
+                            try:
+                                password_validation.validate_password(pas, user=usuario)
+                            except ValidationError as ve:
+                                messages.error(
+                                    request,
+                                    f"Fila {index + 1}:" + " ".join(ve.messages),
+                                )
+                                continue
 
                             if row["clave"] in claves_existentes:
                                 usuarios_existentes.append(usuario)
