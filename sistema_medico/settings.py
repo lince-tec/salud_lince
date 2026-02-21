@@ -14,7 +14,7 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', default=False) == 'True'
+DEBUG = os.getenv('DEBUG') 
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1','web-production-d53e3.up.railway.app']
 
@@ -89,11 +89,11 @@ if DEBUG:
             'PORT': os.getenv('PORT_BD'),
         }
     }
-else:
-    print("Estas en modo producción con la base de datos remota")
-    DATABASES = {
-        'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
-    }
+#else:
+    #print("Estas en modo producción con la base de datos remota")
+    #DATABASES = {
+    #    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+    #}
 
 # Para que Django use el modelo "Usuario"
 # en lugar del modelo predeterminado "user"
