@@ -417,12 +417,12 @@ def guardar_contactos_view(request):
     c1 = {
         "nombre": request.POST.get("nombre_1", "").strip(),
         "parentesco": request.POST.get("parentesco_1", "").strip(),
-        "telefono": request.POST.get("telefono_1", "").strip(),
+        "telefono": request.POST.get("telefono_1", "").replace(" ", ""),
     }
     c2 = {
         "nombre": request.POST.get("nombre_2", "").strip(),
         "parentesco": request.POST.get("parentesco_2", "").strip(),
-        "telefono": request.POST.get("telefono_2", "").strip(),
+        "telefono": request.POST.get("telefono_2", "").replace(" ", ""),
     }
 
     # 2) Normalizar lista de contactos a guardar (solo los completos)
