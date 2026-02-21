@@ -1,6 +1,7 @@
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
 
+
 class ClaveBackend(ModelBackend):
     def authenticate(self, request, clave=None, password=None, **kwargs):
         Usuario = get_user_model()

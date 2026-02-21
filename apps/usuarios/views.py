@@ -23,7 +23,7 @@ from apps.consultas.models import CategoriaPadecimiento, Consulta, SignosVitales
 from apps.usuarios.decorators import role_required
 from apps.usuarios.forms import HistorialMedicoForm
 from apps.usuarios.forms import LoginForm
-from apps.usuarios.models import Area, HistorialMedico, Usuario,ContactoEmergencia
+from apps.usuarios.models import Area, HistorialMedico, Usuario, ContactoEmergencia
 
 from apps.usuarios.views_dashboard_utils import (
     generate_habitos_figure,
@@ -37,8 +37,8 @@ from apps.publicaciones.views import obtener_publicaciones
 
 
 @never_cache
-@ratelimit(key='ip', rate='5/m', method='POST', block=True)
-@ratelimit(key='ip', rate='5/m', method='GET', block=True)
+@ratelimit(key="ip", rate="5/m", method="POST", block=True)
+@ratelimit(key="ip", rate="5/m", method="GET", block=True)
 def login_view(request):
     """
     Vista para iniciar sesión de usuarios según su rol.
@@ -114,16 +114,15 @@ def medico_dashboard_view(request):
     genero_fig, genero_pastel = generate_gender_figures()
 
     context = {
-        'habitos_graph': habitos_fig.to_html(full_html=False),
-        'consultas_graph': consultas_fig.to_html(full_html=False),
-        'areas_graph': areas_fig.to_html(full_html=False),
-        'padecimientos_graph': padecimientos_fig.to_html(full_html=False),
-        'genero_graph': genero_fig.to_html(full_html=False),
-        'genero_pastel': genero_pastel.to_html(full_html=False),
+        "habitos_graph": habitos_fig.to_html(full_html=False),
+        "consultas_graph": consultas_fig.to_html(full_html=False),
+        "areas_graph": areas_fig.to_html(full_html=False),
+        "padecimientos_graph": padecimientos_fig.to_html(full_html=False),
+        "genero_graph": genero_fig.to_html(full_html=False),
+        "genero_pastel": genero_pastel.to_html(full_html=False),
     }
 
-    return render(request, 'medico_dashboard.html', context)
-
+    return render(request, "medico_dashboard.html", context)
 
 
 @never_cache
@@ -141,28 +140,78 @@ def paciente_dashboard_view(request):
         HttpResponse: Renderizado de la plantilla del dashboard del paciente.
     """
     glosario = [
-        { "id": "alergia", "termino": "Alergia", "definicion": "Reacción del sistema inmunológico ante sustancias inofensivas para la mayoría." },
-        { "id": "antibiotico", "termino": "Antibiótico", "definicion": "Medicamento usado para tratar infecciones bacterianas." },
-        { "id": "asintomatico", "termino": "Asintomático", "definicion": "Persona que tiene una enfermedad pero no presenta síntomas visibles." },
-        { "id": "diabetes", "termino": "Diabetes", "definicion": "Enfermedad metabólica que se produce por niveles elevados de glucosa en sangre." },
-        { "id": "hipertension", "termino": "Hipertensión", "definicion": "Enfermedad crónica caracterizada por el aumento de la presión arterial." },
-        { "id": "vacuna", "termino": "Vacuna", "definicion": "Sustancia que estimula la producción de defensas para prevenir enfermedades." },
+        {
+            "id": "alergia",
+            "termino": "Alergia",
+            "definicion": "Reacción del sistema inmunológico ante sustancias inofensivas para la mayoría.",
+        },
+        {
+            "id": "antibiotico",
+            "termino": "Antibiótico",
+            "definicion": "Medicamento usado para tratar infecciones bacterianas.",
+        },
+        {
+            "id": "asintomatico",
+            "termino": "Asintomático",
+            "definicion": "Persona que tiene una enfermedad pero no presenta síntomas visibles.",
+        },
+        {
+            "id": "diabetes",
+            "termino": "Diabetes",
+            "definicion": "Enfermedad metabólica que se produce por niveles elevados de glucosa en sangre.",
+        },
+        {
+            "id": "hipertension",
+            "termino": "Hipertensión",
+            "definicion": "Enfermedad crónica caracterizada por el aumento de la presión arterial.",
+        },
+        {
+            "id": "vacuna",
+            "termino": "Vacuna",
+            "definicion": "Sustancia que estimula la producción de defensas para prevenir enfermedades.",
+        },
     ]
 
     flashcards = [
-        { "pregunta": "¿Cuál es una señal común de deshidratación?", "respuesta": "Boca seca, fatiga y orina de color oscuro." },
-        { "pregunta": "¿Qué es la hipertensión?", "respuesta": "Es una enfermedad crónica que afecta la presión arterial." },
-        { "pregunta": "¿Cuánto tiempo se recomienda dormir diariamente en promedio?", "respuesta": "Entre 7 y 9 horas por noche para un adulto." },
-        { "pregunta": "Verdadero o falso: La actividad física mejora el estado de ánimo.", "respuesta": "Verdadero. Libera endorfinas que ayudan a sentirse mejor." },
-        { "pregunta": "¿Cuántas veces al día se recomienda lavarse los dientes?", "respuesta": "Al menos dos veces al día, después de las comidas." },
-        { "pregunta": "¿Qué es el estrés?", "respuesta": "Una respuesta del cuerpo ante situaciones de presión o peligro." },
+        {
+            "pregunta": "¿Cuál es una señal común de deshidratación?",
+            "respuesta": "Boca seca, fatiga y orina de color oscuro.",
+        },
+        {
+            "pregunta": "¿Qué es la hipertensión?",
+            "respuesta": "Es una enfermedad crónica que afecta la presión arterial.",
+        },
+        {
+            "pregunta": "¿Cuánto tiempo se recomienda dormir diariamente en promedio?",
+            "respuesta": "Entre 7 y 9 horas por noche para un adulto.",
+        },
+        {
+            "pregunta": "Verdadero o falso: La actividad física mejora el estado de ánimo.",
+            "respuesta": "Verdadero. Libera endorfinas que ayudan a sentirse mejor.",
+        },
+        {
+            "pregunta": "¿Cuántas veces al día se recomienda lavarse los dientes?",
+            "respuesta": "Al menos dos veces al día, después de las comidas.",
+        },
+        {
+            "pregunta": "¿Qué es el estrés?",
+            "respuesta": "Una respuesta del cuerpo ante situaciones de presión o peligro.",
+        },
     ]
     publicaciones = obtener_publicaciones()
-    return render(request, "paciente_dashboard.html", {"glosario": glosario, "flashcards": flashcards, "publicaciones": publicaciones})
+    return render(
+        request,
+        "paciente_dashboard.html",
+        {
+            "glosario": glosario,
+            "flashcards": flashcards,
+            "publicaciones": publicaciones,
+        },
+    )
 
 
 @never_cache
-@ratelimit(key='ip', rate='5/m', method='GET', block=True)
+@ratelimit(key="ip", rate="5/m", method="GET", block=True)
 @login_required
 @role_required(["paciente"])
 def historial_view(request):
@@ -183,7 +232,7 @@ def historial_view(request):
 
 
 @never_cache
-@ratelimit(key='ip', rate='10/m', method='GET', block=True)
+@ratelimit(key="ip", rate="10/m", method="GET", block=True)
 @login_required
 @role_required(["paciente"])
 def paciente_consultas_view(request):
@@ -192,10 +241,12 @@ def paciente_consultas_view(request):
 
     Aplica paginación para mostrar un número limitado de consultas por página.
     """
-    consultas = Consulta.objects.filter(clave_paciente=request.user).select_related('signos_vitales')
+    consultas = Consulta.objects.filter(clave_paciente=request.user).select_related(
+        "signos_vitales"
+    )
 
     paginador = Paginator(consultas, 20)  # Mostrar 10 consultas por páginas
-    pagina = request.GET.get('page', 1)
+    pagina = request.GET.get("page", 1)
     try:
         consultas = paginador.page(pagina)
     except PageNotAnInteger:
@@ -207,7 +258,7 @@ def paciente_consultas_view(request):
 
 
 @never_cache
-@ratelimit(key='ip', rate='5/m', method='GET', block=True)
+@ratelimit(key="ip", rate="5/m", method="GET", block=True)
 @login_required
 @role_required(["paciente", "medico"])
 def usuario_informacion_view(request):
@@ -218,16 +269,27 @@ def usuario_informacion_view(request):
     """
     informacion = request.user
     contactos = []
-    
+
     if hasattr(request.user, "contactos_emergencia"):
         contactos = request.user.contactos_emergencia.all().order_by("id")
-        
-    return render(request, "informacion.html", {"informacion": informacion, "contactos": contactos,})
+
+    return render(
+        request,
+        "informacion.html",
+        {
+            "informacion": informacion,
+            "contactos": contactos,
+        },
+    )
 
 
 @never_cache
-@ratelimit(key='ip', rate='5/m', method='POST', block=True) # Limite 5 solicitudes POST por minuto por IP
-@ratelimit(key='ip', rate='10/m', method='GET', block=True) # Limite 10 solicitudes GET por minuto por IP
+@ratelimit(
+    key="ip", rate="5/m", method="POST", block=True
+)  # Limite 5 solicitudes POST por minuto por IP
+@ratelimit(
+    key="ip", rate="10/m", method="GET", block=True
+)  # Limite 10 solicitudes GET por minuto por IP
 @login_required
 @role_required(["paciente", "medico"])
 def cambiar_contrasena_view(request):
@@ -237,12 +299,12 @@ def cambiar_contrasena_view(request):
     Solo es accesible para usuarios autenticados con los roles 'paciente' o 'medico'.
     La contraseña debe cumplir con ciertos requisitos de seguridad.
     """
-    if request.method == 'POST': # Solo se ejecuta si la solicitud es de tipo POST
+    if request.method == "POST":  # Solo se ejecuta si la solicitud es de tipo POST
         # Obtención de las contraseñas ingresadas por el usuario desde el formulario
         current_password = request.POST.get('current_password',)
         new_password = request.POST.get('new_password',)
         confirm_password = request.POST.get('confirm_password',)
-        
+
         # Verificación de que la contraseña actual ingresada por el usuario sea correcta
         if not request.user.check_password(current_password):
             messages.error(request, 'La contraseña actual es incorrecta.')
@@ -252,14 +314,14 @@ def cambiar_contrasena_view(request):
         if new_password != confirm_password:
             messages.error( request, 'Las contraseñas no coinciden.')
             return redirect("informacion")
-        
+
         try:
             password_validation.validate_password(new_password, user=request.user)
         except ValidationError as ve:
             for msg in ve.messages:
                 messages.error(request, msg)
             return redirect("informacion")
-        
+
         if request.user.check_password(new_password):
             messages.error(request, "La nueva contraseña no puede ser la igual a la actual.")
             return redirect("informacion")
@@ -269,14 +331,16 @@ def cambiar_contrasena_view(request):
         request.user.save()
         # Mantener la sesión activa después del cambio de contraseña
         update_session_auth_hash(request, request.user)
-        messages.success(request, 'Tu contraseña ha sido cambiada exitosamente.')
+        messages.success(request, "Tu contraseña ha sido cambiada exitosamente.")
         return redirect("informacion")
 
     return redirect("informacion")
 
 
 @never_cache
-@ratelimit(key='ip', rate='10/m', method='GET', block=True) # Limite 10 solicitudes GET por minuto por IP
+@ratelimit(
+    key="ip", rate="10/m", method="GET", block=True
+)  # Limite 10 solicitudes GET por minuto por IP
 @login_required
 @role_required(["medico"])
 def medico_consultas_view(request):
@@ -286,44 +350,55 @@ def medico_consultas_view(request):
     Si el parámetro 'todas' está presente en la URL, se mostrarán todas las consultas.
     Si no, se mostrarán solo las consultas relacionadas con el médico autenticado.
     """
-    mostrar_todas = request.GET.get('todas', '0') == '1'  # Leer parámetro 'todas'
-    consultas_base = Consulta.objects.select_related('clave_medico', 'clave_paciente', 'signos_vitales')
+    mostrar_todas = request.GET.get("todas", "0") == "1"  # Leer parámetro 'todas'
+    consultas_base = Consulta.objects.select_related(
+        "clave_medico", "clave_paciente", "signos_vitales"
+    )
 
     if not mostrar_todas:
         consultas_base = consultas_base.filter(clave_medico=request.user)
 
-    clave_paciente_query = request.GET.get('clave_paciente') #variables para la busqueda
-    fecha_inicio_query = request.GET.get('fecha_inicio')
-    fecha_fin_query = request.GET.get('fecha_fin')
+    clave_paciente_query = request.GET.get(
+        "clave_paciente"
+    )  # variables para la busqueda
+    fecha_inicio_query = request.GET.get("fecha_inicio")
+    fecha_fin_query = request.GET.get("fecha_fin")
 
-
-    if clave_paciente_query: #busqueda por clave del paciente
-        consultas_base = consultas_base.filter(clave_paciente__clave__icontains=clave_paciente_query)
+    if clave_paciente_query:  # busqueda por clave del paciente
+        consultas_base = consultas_base.filter(
+            clave_paciente__clave__icontains=clave_paciente_query
+        )
 
     if fecha_inicio_query and fecha_fin_query:
         try:
-            fecha_inicio = datetime.strptime(fecha_inicio_query, '%Y-%m-%d')
-            fecha_fin = datetime.strptime(fecha_fin_query, '%Y-%m-%d') + timedelta(days=1)
-            consultas_base = consultas_base.filter(fecha__gte=fecha_inicio, fecha__lt=fecha_fin)
+            fecha_inicio = datetime.strptime(fecha_inicio_query, "%Y-%m-%d")
+            fecha_fin = datetime.strptime(fecha_fin_query, "%Y-%m-%d") + timedelta(
+                days=1
+            )
+            consultas_base = consultas_base.filter(
+                fecha__gte=fecha_inicio, fecha__lt=fecha_fin
+            )
         except ValueError:
             pass
     elif fecha_inicio_query:
         try:
-            fecha_inicio = datetime.strptime(fecha_inicio_query, '%Y-%m-%d')
+            fecha_inicio = datetime.strptime(fecha_inicio_query, "%Y-%m-%d")
             consultas_base = consultas_base.filter(fecha__gte=fecha_inicio)
         except ValueError:
             pass
     elif fecha_fin_query:
         try:
-            fecha_fin_query = datetime.strptime(fecha_fin_query, '%Y-%m-%d') + timedelta(days=1)
+            fecha_fin_query = datetime.strptime(
+                fecha_fin_query, "%Y-%m-%d"
+            ) + timedelta(days=1)
             consultas_base = consultas_base.filter(fecha__lt=fecha_fin)
         except ValueError:
             pass
 
-    consultas = consultas_base.order_by('-fecha')
+    consultas = consultas_base.order_by("-fecha")
 
     paginador = Paginator(consultas, 20)  # Mostrar 10 consultas por páginas
-    pagina = request.GET.get('page', 1)
+    pagina = request.GET.get("page", 1)
     try:
         consultas = paginador.page(pagina)
     except PageNotAnInteger:
@@ -331,13 +406,17 @@ def medico_consultas_view(request):
     except EmptyPage:
         consultas = paginador.page(paginador.num_pages)
 
-    return render(request, "medico_consultas.html", {
-        "consultas": consultas,
-        "mostrar_todas": mostrar_todas,
-        "clave_paciente": clave_paciente_query,
-        "fecha_inicio": fecha_inicio_query,
-        "fecha_fin": fecha_fin_query,
-    })
+    return render(
+        request,
+        "medico_consultas.html",
+        {
+            "consultas": consultas,
+            "mostrar_todas": mostrar_todas,
+            "clave_paciente": clave_paciente_query,
+            "fecha_inicio": fecha_inicio_query,
+            "fecha_fin": fecha_fin_query,
+        },
+    )
 
 
 @never_cache
@@ -350,23 +429,30 @@ def medico_historiales_view(request):
     Si se proporciona un parámetro de búsqueda, los historiales se filtrarán de acuerdo al ID del historial.
     También se paginan los resultados para mostrar solo una cantidad limitada por página.
     """
-    query = request.GET.get('search', '')
+    query = request.GET.get("search", "")
     query = query.strip().upper()
     # Si hay una consulta, filtrar los historiales de acuerdo a la consulta
     if query:
-        historiales = HistorialMedico.objects.filter(
-            id_historial__icontains=query,
-            paciente__role__nombre_rol='paciente',
-            paciente__is_active=True
-        ).exclude(paciente__carrera_o_puesto__carrera_o_puesto="Médico").order_by('id_historial')
+        historiales = (
+            HistorialMedico.objects.filter(
+                id_historial__icontains=query,
+                paciente__role__nombre_rol="paciente",
+                paciente__is_active=True,
+            )
+            .exclude(paciente__carrera_o_puesto__carrera_o_puesto="Médico")
+            .order_by("id_historial")
+        )
     else:
-        historiales = HistorialMedico.objects.filter(
-            paciente__role__nombre_rol='paciente',
-            paciente__is_active=True
-        ).exclude(paciente__carrera_o_puesto__carrera_o_puesto="Médico").order_by('id_historial')
+        historiales = (
+            HistorialMedico.objects.filter(
+                paciente__role__nombre_rol="paciente", paciente__is_active=True
+            )
+            .exclude(paciente__carrera_o_puesto__carrera_o_puesto="Médico")
+            .order_by("id_historial")
+        )
 
     paginador = Paginator(historiales, 10)  # Mostrar 10 consultas por páginas
-    pagina = request.GET.get('page', 1)
+    pagina = request.GET.get("page", 1)
     try:
         historiales = paginador.page(pagina)
     except PageNotAnInteger:
@@ -374,7 +460,9 @@ def medico_historiales_view(request):
     except EmptyPage:
         historiales = paginador.page(paginador.num_pages)
 
-    return render(request, "medico_historiales.html", {"historiales": historiales, "query": query})
+    return render(
+        request, "medico_historiales.html", {"historiales": historiales, "query": query}
+    )
 
 
 @never_cache
@@ -389,20 +477,28 @@ def editar_historial_view(request, pk):
     de lo contrario, se muestra el formulario con los datos actuales del historial.
     """
     historial = get_object_or_404(HistorialMedico, id_historial=pk)
-    datos = request.POST if request.method == 'POST' else None
+    datos = request.POST if request.method == "POST" else None
     form = HistorialMedicoForm(datos, instance=historial)
     paciente = historial.paciente
 
     contactos = ContactoEmergencia.objects.filter(paciente=paciente)
 
-    if request.method == 'POST' and form.is_valid():
-            form.save()
-            return redirect('medico_historiales')
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return redirect("medico_historiales")
 
-    return render(request, 'editar_historial.html', {'form': form, 'historial': historial, 'contactos': contactos})
+    return render(
+        request,
+        "editar_historial.html",
+        {"form": form, "historial": historial, "contactos": contactos},
+    )
 
 
-telefono_validator = RegexValidator(r'^\+?\d{7,15}$', 'Ingresa un teléfono válido (7 a 15 dígitos, opcional +).')
+telefono_validator = RegexValidator(
+    r"^\+?\d{7,15}$", "Ingresa un teléfono válido (7 a 15 dígitos, opcional +)."
+)
+
+
 @role_required(["paciente"])
 def guardar_contactos_view(request):
     """
@@ -410,7 +506,7 @@ def guardar_contactos_view(request):
     """
     if request.method == "POST":
         paciente = request.user  # usuario autenticado
-    
+
     p = request.user
 
     # 1) Leer datos
@@ -434,7 +530,10 @@ def guardar_contactos_view(request):
 
     # Validación: debe haber al menos 1 contacto completo
     if not contactos:
-        messages.error(request, "Debes completar al menos un contacto (nombre, parentesco y teléfono).")
+        messages.error(
+            request,
+            "Debes completar al menos un contacto (nombre, parentesco y teléfono).",
+        )
         return redirect("informacion")
 
     # Validación: máximo 2 (por si cambias el formulario luego)
@@ -459,12 +558,14 @@ def guardar_contactos_view(request):
     try:
         with transaction.atomic():
             ContactoEmergencia.objects.filter(paciente=p).delete()
-            ContactoEmergencia.objects.bulk_create([
-                ContactoEmergencia(paciente=p, **c) for c in contactos
-            ])
+            ContactoEmergencia.objects.bulk_create(
+                [ContactoEmergencia(paciente=p, **c) for c in contactos]
+            )
     except IntegrityError:
         # Por si acaso (colisión con otra sesión, etc.)
-        messages.error(request, "Ya existe un contacto con ese teléfono para este paciente.")
+        messages.error(
+            request, "Ya existe un contacto con ese teléfono para este paciente."
+        )
         return redirect("informacion")
 
     messages.success(request, "Contactos de emergencia guardados correctamente.")
