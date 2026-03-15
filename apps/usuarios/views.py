@@ -139,72 +139,11 @@ def paciente_dashboard_view(request):
     Returns:
         HttpResponse: Renderizado de la plantilla del dashboard del paciente.
     """
-    glosario = [
-        {
-            "id": "alergia",
-            "termino": "Alergia",
-            "definicion": "Reacción del sistema inmunológico ante sustancias inofensivas para la mayoría.",
-        },
-        {
-            "id": "antibiotico",
-            "termino": "Antibiótico",
-            "definicion": "Medicamento usado para tratar infecciones bacterianas.",
-        },
-        {
-            "id": "asintomatico",
-            "termino": "Asintomático",
-            "definicion": "Persona que tiene una enfermedad pero no presenta síntomas visibles.",
-        },
-        {
-            "id": "diabetes",
-            "termino": "Diabetes",
-            "definicion": "Enfermedad metabólica que se produce por niveles elevados de glucosa en sangre.",
-        },
-        {
-            "id": "hipertension",
-            "termino": "Hipertensión",
-            "definicion": "Enfermedad crónica caracterizada por el aumento de la presión arterial.",
-        },
-        {
-            "id": "vacuna",
-            "termino": "Vacuna",
-            "definicion": "Sustancia que estimula la producción de defensas para prevenir enfermedades.",
-        },
-    ]
-
-    flashcards = [
-        {
-            "pregunta": "¿Cuál es una señal común de deshidratación?",
-            "respuesta": "Boca seca, fatiga y orina de color oscuro.",
-        },
-        {
-            "pregunta": "¿Qué es la hipertensión?",
-            "respuesta": "Es una enfermedad crónica que afecta la presión arterial.",
-        },
-        {
-            "pregunta": "¿Cuánto tiempo se recomienda dormir diariamente en promedio?",
-            "respuesta": "Entre 7 y 9 horas por noche para un adulto.",
-        },
-        {
-            "pregunta": "Verdadero o falso: La actividad física mejora el estado de ánimo.",
-            "respuesta": "Verdadero. Libera endorfinas que ayudan a sentirse mejor.",
-        },
-        {
-            "pregunta": "¿Cuántas veces al día se recomienda lavarse los dientes?",
-            "respuesta": "Al menos dos veces al día, después de las comidas.",
-        },
-        {
-            "pregunta": "¿Qué es el estrés?",
-            "respuesta": "Una respuesta del cuerpo ante situaciones de presión o peligro.",
-        },
-    ]
     publicaciones = obtener_publicaciones()
     return render(
         request,
         "paciente_dashboard.html",
         {
-            "glosario": glosario,
-            "flashcards": flashcards,
             "publicaciones": publicaciones,
         },
     )
