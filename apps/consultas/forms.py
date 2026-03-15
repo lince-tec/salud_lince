@@ -96,7 +96,7 @@ class SignosVitalesForm(forms.ModelForm):
     def clean_presion_arterial(self):
         pa = self.cleaned_data.get("presion_arterial")
         if pa and not re.match(
-            r"^(1[01][0-9]|120|12[0-9]|1[3-9][0-9]|140)/(60|6[0-9]|70|7[0-9]|80|8[0-9]|90)$",
+            r"^(7[0-9]|[89][0-9]|1[0-9]{2}|200)\/(5[0-9]|[6-9][0-9]|1[01][0-9]|120)$",
             pa,
         ):
             raise ValidationError(
