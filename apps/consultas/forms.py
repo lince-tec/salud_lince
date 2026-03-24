@@ -51,7 +51,7 @@ class SignosVitalesForm(forms.ModelForm):
             r"^(?:[4-9][0-9]|1[0-9][0-9])(?:\.[0-9])?$", str(peso)
         ):
             raise ValidationError(
-                'Dato de peso no válido (ejemplo de dato a ingresar: "40.0-199.9")'
+                'Peso no válido (Ejemplo de rango a ingresar: "40.0-199.9")'
             )
         return peso
 
@@ -61,7 +61,7 @@ class SignosVitalesForm(forms.ModelForm):
             r"^(1\.\d{1,2}|2\.[0-2]\d?)$", str(talla)
         ):
             raise ValidationError(
-                'Dato de talla no válido (ejemplo de dato a ingresar: "1.00-2.29")'
+                'Talla no válida (Ejemplo de rango a ingresar: "1.00-2.29")'
             )
         return talla
 
@@ -71,7 +71,7 @@ class SignosVitalesForm(forms.ModelForm):
             r"^(3[0-9]|4[0-9]|5[0-9])(\.[0-9])?$", str(temperatura)
         ):
             raise ValidationError(
-                'Dato de temperatura no válido (ejemplo de dato a ingresar: "30.0-50.9")'
+                'Temperatura no válida (Ejemplo de rango a ingresar: "30.0-50.9")'
             )
         return temperatura
 
@@ -81,7 +81,7 @@ class SignosVitalesForm(forms.ModelForm):
             r"^(5[0-9]|[6-9][0-9]|1[0-9]{2}|2[0-9]{2})$", str(fc)
         ):
             raise ValidationError(
-                'Dato frecuencia cardiaca no válido (ejemplo de dato a ingresar: "50-299")'
+                'Frecuencia cardiaca no válida (Ejemplo de rango a ingresar: "50-299")'
             )
         return fc
 
@@ -89,7 +89,7 @@ class SignosVitalesForm(forms.ModelForm):
         fr = self.cleaned_data.get("frecuencia_respiratoria")
         if fr is not None and not re.match(r"^(12|1[3-9]|2[0-9]|3[0-9]|40)$", str(fr)):
             raise ValidationError(
-                'Dato de frecuencia respiratoria no valido (ejemplo de dato a ingresar: "12-40")'
+                'Frecuencia respiratoria no válida (Ejemplo de rango a ingresar: "12-40")'
             )
         return fr
 
@@ -100,7 +100,7 @@ class SignosVitalesForm(forms.ModelForm):
             pa,
         ):
             raise ValidationError(
-                'Dato de presión arterial no valido (ejemplo de dato a ingresar: "120/80")'
+                'Presión arterial no válida (Ejemplo de rango a ingresar: "120/80")'
             )
         return pa
 
