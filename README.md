@@ -21,7 +21,7 @@ Sigue estos pasos para instalar el proyecto en tu entorno local:
 
 1. Clona este repositorio en tu máquina local:
 ```bash
-git clone https://github.com/brianrscode/salud_lince.git
+git clone https://github.com/lince-tec/salud_lince.git
 cd salud_lince
 ```
 
