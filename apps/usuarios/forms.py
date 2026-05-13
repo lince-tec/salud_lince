@@ -1,10 +1,10 @@
 import re
 
 from django import forms
+from django.contrib.auth.forms import PasswordResetForm
 from datetime import date
 from apps.usuarios.models import Usuario
 from apps.usuarios.models import HistorialMedico
-
 
 class HistorialMedicoForm(forms.ModelForm):
     """
@@ -181,3 +181,26 @@ class ValidarForm(forms.ModelForm):
         #   self.add_error('clave', "La clave 'am' corresponde al área Médica.")
 
         return cleaned_data
+
+class RecuperarPasswordForm(PasswordResetForm):
+    
+    email = forms.EmailField(
+        widget=forms.EmailInput(
+            attrs={
+                "class": "form-control", 
+                "placeholder": "Correo", 
+                "id": "email",
+                "style": "height: 45px;",
+                "autocomplete": "email",
+            }
+        )
+    )
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not Usuario.objects.filter(
+            email=email,
+            is_active=True
+            ).exists():
+            
+            raise forms.ValidationError("No existe ningún usuario registrado con este correo electrónico.")
+        return email
