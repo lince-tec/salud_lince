@@ -1,0 +1,112 @@
+{% extends "layouts/main.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/checkbox.css' %}">
+{% endblock %}
+
+{% block title %}
+Recuperar contraseña
+{% endblock %}
+
+{% block content %}
+
+{% if validlink%}
+<div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center px-3">
+
+    <img src="{% static 'imgs/logoV2_SF.png' %}"
+         class="img-fluid mb-4"
+         style="width: 260px; max-width: 80%;">
+
+    <div class="card shadow-lg border-0 p-4 p-md-5"
+         style="width: 100%; max-width: 460px; border-radius: 15px;">
+
+        <h2 class="text-center mb-4"> Recuperar contraseña </h2>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <!-- Nueva contraseña -->
+            <div class="mb-4">
+
+                <label class="form-label"> Nueva contraseña </label>
+
+                <input type="password" name="new_password1" class="form-control" placeholder="Contraseña" required>
+                <p style="color: gray;">La contraseña debe tener al menos 12 caracteres.</p>
+
+                {% if form.new_password1.errors %}
+                    <div class="text-danger mt-1">
+                        {{ form.new_password1.errors.0 }}
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label"> Confirma nueva contraseña</label>
+
+                <input type="password" name="new_password2" class="form-control" placeholder="Contraseña" required>
+
+                {% if form.new_password2.errors %}
+                    <div class="text-danger mt-1">
+                        {{ form.new_password2.errors.0 }}
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <!-- Mostrar contraseña -->
+            <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="mostrarPassword">
+                <label class="form-check-label"for="mostrarPassword"> Mostrar contraseña </label>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary fw-semibold"> Confirmar </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+{% else %}
+    <div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center px-3">
+        <h2 class="text-center mb-4"> Enlace inválido </h2>
+        <p class="text-center">El enlace para recuperar la contraseña no es válido o ha expirado.</p>
+    </div>
+
+    <div class="d-grid mt-3">
+    <a href="{% url 'password_reset' %}" class="btn btn-primary"> Solicitar nuevo enlace </a>
+    </div>
+
+{% endif %}
+
+<!-- Mostrar/Ocultar contraseña -->
+<script>
+
+    const checkbox = document.getElementById("mostrarPassword");
+
+    const password1 = document.querySelector(
+        'input[name="new_password1"]'
+    );
+
+    const password2 = document.querySelector(
+        'input[name="new_password2"]'
+    );
+
+    checkbox.addEventListener("change", function () {
+
+        const type = this.checked ? "text" : "password";
+
+        password1.type = type;
+        password2.type = type;
+
+    });
+
+</script>
+
+{% endblock %}

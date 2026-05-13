@@ -1,0 +1,80 @@
+{% extends "layouts/main.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+{% endblock %}
+
+{% block title %}
+Recuperar contraseña
+{% endblock %}
+
+{% block content %}
+
+<div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center px-3">
+
+    <img src="{% static 'imgs/logoV2_SF.png' %}"
+         class="img-fluid mb-4"
+         style="width: 260px; max-width: 80%;">
+
+    <div class="card shadow-lg border-0 p-4 p-md-5"
+         style="width: 100%; max-width: 540px; border-radius: 15px;">
+
+        <h2 class="text-center mb-4">
+            Recuperar contraseña
+        </h2>
+
+        <p class="text-center mx-auto mb-4" style="max-width: 380px; font-size: 15px;">
+            Ingrese su correo institucional para recibir las instrucciones
+            para restablecer su contraseña :
+        </p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger alert-dismissible fade show"
+                     role="alert">
+
+                    {{ message }}
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert">
+                    </button>
+
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+
+            {% csrf_token %}
+            <div class="mb-4 mx-auto" style="max-width: 300px; margin: auto; width: 100%;">
+
+                {{ form.email }}
+
+                {% if form.email.errors %}
+                    <div class="text-danger mt-1">
+                        {{ form.email.errors.0 }}
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <div class="d-grid mx-auto" style="max-width: 200px; margin: auto; width: 100%;">
+
+                <button type="submit"
+                        class="btn btn-primary fw-semibold">
+
+                    Enviar
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
