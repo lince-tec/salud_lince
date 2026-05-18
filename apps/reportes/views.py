@@ -1,15 +1,19 @@
 import pandas as pd
+import os
+from django.conf import settings
 from datetime import datetime
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from apps.usuarios.decorators import role_required
+from openpyxl import load_workbook
+from openpyxl.cell.cell import MergedCell
 
 from apps.consultas.models import Consulta
 from apps.usuarios.models import HistorialMedico
 
 #Fiunciones auxiliares
 def si_no(valor):
-    return "Sí" if valor else "No"
+    return "SI" if valor else "No"
     
 def clasificar_imc(imc):
     if imc is None:
@@ -29,6 +33,7 @@ def clasificar_imc(imc):
     else: 
         return "OG IV"
     
+#función para obtener las consultas por periodos
 def obtener_consultas(periodo, anio, mes=None, trimestre=None):
 
     if periodo == "mensual":
@@ -55,116 +60,69 @@ def obtener_consultas(periodo, anio, mes=None, trimestre=None):
     
     return consultas.select_related("clave_paciente", "signos_vitales").order_by("fecha")
 
-def construir_df_r09(consultas):
-    #Dataframe R09
-    data = []
+#función para limpar R09
+def limpiar_r09(ws):
+    for row in ws.iter_rows(min_row= 9, max_row= 1000):
+        for cell in row:
+            if not isinstance(cell, MergedCell):
+                cell.value = None
 
-    for c in consultas:
-        paciente = c.clave_paciente
+#función para exportar los datos
+def exportar_r09(ws, consultas):
+    fila_excel = 9
+    consecutivo = 1
+
+    for consulta in consultas:
+        paciente = consulta.clave_paciente
         historial = getattr(paciente, "historial", None)
-        signos = getattr(c, "signos_vitales", None)
+        signos = getattr(consulta, "signos_vitales", None)
 
-        data.append({
-            # ===== DATOS PACIENTE =====
-            "Fecha": f"{c.fecha.strftime('%d/%m/%Y')}",
-            "Nombre y apellido": f"{paciente.nombres} {paciente.apellido_paterno}",
-            "Matricula": f"{paciente.clave}",
-            "Carrera": f"{paciente.carrera_o_puesto}",
+        ws[f"A{fila_excel}"] = consecutivo
+        ws[f"B{fila_excel}"] = consulta.fecha.strftime("%d/%m/%Y")
+        ws[f"C{fila_excel}"] = f"{paciente.nombres} {paciente.apellido_paterno} {paciente.apellido_materno}" if hasattr(paciente, "nombres") and hasattr(paciente, "apellido_paterno") and hasattr(paciente, "apellido_materno") else ""
+        ws[f"D{fila_excel}"] = paciente.clave if hasattr(paciente, "clave") else ""
+        ws[f"E{fila_excel}"] = str(paciente.carrera_o_puesto)
 
-            # ===== SIGNOS VITALES =====
-            "Peso": signos.peso if signos else "",
-            "Talla": signos.talla if signos else "",
-            "IMC": signos.imc if signos else "",
-
-            # ===== HÁBITOS ====
-            "Tabaquismo": si_no(historial.usa_cigarro) if historial else "No",
-            "Alcoholismo": si_no(historial.ingiere_alcohol) if historial else "No",
-            "Agudeza Visual": si_no(historial.usa_lentes) if historial else "No",
-            "Patologías": historial.enfermedades_cronicas if historial else " ",
-            "Usaría MPF": si_no(historial.usa_metodos_anticonceptivos) if historial else "No",
-            "Emabaraza": si_no(historial.es_embarazada) if historial else "No",
-            "Estado nutricional" : clasificar_imc(signos.imc) if signos else " ",
-            "Adicciones": si_no(historial.usa_drogas) if historial else "No",
-
-        })
-    return pd.DataFrame(data)
-
-def construir_tabla_r10(df):
-        #Tabla en la hoja R10
-    tabla = df.groupby("Carrera").agg(
-        Bajo_peso = ("Estado nutricional", lambda x: (x == "BP").sum()),
-        Peso_ideal = ("Estado nutricional", lambda x: (x == "PI").sum()),
-        Sobrepeso = ("Estado nutricional", lambda x: (x == "SP").sum()),
-        Obesidad = ("Estado nutricional", lambda x: x.isin(["OG I", "OG II", "OG III", "OG IV"]).sum()),
-        Alcoholismo = ("Alcoholismo", lambda x: (x == "Sí").sum()),
-        Tabaquismo = ("Tabaquismo", lambda x: (x == "Sí").sum()),
-        Vista_normal = ("Agudeza Visual", lambda x: (x == "No").sum()),
-        Usa_lentes = ("Agudeza Visual", lambda x: (x == "Sí").sum()),
-    ).reset_index()
-
-    #colmnas manuales R10
-    matricula_anio = {
-        "Ing. Bioquimica": 0,
-        "Ing. Electromecánica": 0,
-        "Lic. Gastronomia": 0,
-        "Ing. Industrial": 0,
-        "Ing. Mecatrónica": 0,
-        "Ing. Sistemas Computacionales":0,
-        "Maestria en Ingenieria": 0,
-    }
-
-    expediente_clinico = {
-        "Ing. Bioquimica": 0,
-        "Ing. Electromecánica": 0,
-        "Lic. Gastronomia": 0,
-        "Ing. Industrial": 0,
-        "Ing. Mecatrónica": 0,
-        "Ing. Sistemas Computacionales": 0,
-        "Maestria en Ingenieria": 0,
-    }
-
-    tabla["Matricula_año"] = tabla["Carrera"].map(matricula_anio)
-    tabla["Expediente_clinico"] = tabla["Carrera"].map(expediente_clinico)
-
-    #reordenar columnas R10
-    return tabla[[
-        "Carrera",
-        "Matricula_año",
-        "Expediente_clinico",
-        "Bajo_peso",
-        "Peso_ideal",
-        "Sobrepeso",    
-        "Obesidad",
-        "Alcoholismo",
-        "Tabaquismo",
-        "Vista_normal",
-        "Usa_lentes",
-    ]]
- 
- #Función para crerar gráficas
-def crear_grafica(workbook, worksheet, tabla, columnas,nombre_columnas, titulo, posicion):
-    
-    chart = workbook.add_chart({"type": "column"})
+        ws[f"F{fila_excel}"] = signos.peso if signos else ""
+        ws[f"G{fila_excel}"] = signos.talla if signos else ""
+        ws[f"H{fila_excel}"] = si_no(historial and historial.usa_cigarro)
+        ws[f"I{fila_excel}"] = si_no(historial and historial.ingiere_alcohol)
+        ws[f"J{fila_excel}"] = si_no(historial and historial.usa_lentes)
+        ws[f"K{fila_excel}"] = (historial.enfermedades_cronicas if historial and historial.enfermedades_cronicas else "")
+        ws[f"L{fila_excel}"] = si_no(historial and historial.usa_metodos_anticonceptivos)
+        ws[f"M{fila_excel}"] = si_no(historial and historial.es_embarazada)
+        ws[f"N{fila_excel}"] = (clasificar_imc(signos.imc) if signos else "")
+        ws[f"O{fila_excel}"] = signos.imc if signos else ""
+        ws[f"P{fila_excel}"] = si_no(historial and historial.usa_drogas)
+        ws[f"Q{fila_excel}"] = f"=F{fila_excel}/(G{fila_excel}*G{fila_excel})"
+        ws[f"R{fila_excel}"] = consulta.categoria_de_padecimiento.padecimiento if hasattr(consulta, "categoria_de_padecimiento") else ""
         
-    for col_nombre in nombre_columnas:
-        col = columnas[col_nombre]
+        consecutivo += 1
+        fila_excel += 1
 
-        chart.add_series({
-            "name": ["R10", 0, col],
-            "categories": ["R10", 1, columnas["Carrera"], len(tabla), columnas["Carrera"]],
-            "values": ["R10", 1, col, len(tabla), col],
-            "data_labels": {"value": True},
-        })
+def actualizar_r10(ws):
 
-    chart.set_title({"name": titulo})
-    chart.set_x_axis({"name": "Carrera"})
+    datos = {
+        11:(0, 0),
+        12:(0, 0),
+        13:(0, 0),
+        14:(0, 0),
+        15:(0, 0),
+        16:(0, 0),
+    }
 
-    worksheet.insert_chart(posicion, chart)
+    for fila, valores in datos.items():
+        matricula, experdiente = valores
 
-#Funció principal para exportar el reporte
+        ws[f"D{fila}"] = matricula
+        ws[f"E{fila}"] = experdiente
+    
+    
+
+#Funció principal para descargar el reporte
 @login_required
 @role_required(["medico"])
-def exportar_reporte_r09(request):
+def descargar_reporte_r09(request):
     
     periodo = request.GET.get("periodo")
     anio = int(request.GET.get("anio"))
@@ -176,46 +134,22 @@ def exportar_reporte_r09(request):
     if consultas is None:
         return HttpResponse("Periodo no válido")
     
-    df = construir_df_r09(consultas)
-
-    if df.empty:
-        return HttpResponse("No hay datos para el periodo seleccionado")
-    
-    tabla = construir_tabla_r10(df)
-
-    #Crear archivo Excel
-    output = HttpResponse(
-        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ruta = os.path.join(
+        settings.BASE_DIR,
+        "plantilla_reporte",
+        "R09.xlsx"
     )
 
-    output["Content-Disposition"] = f'attachment; filename="R09_{anio}_{periodo}.xlsx"'
+    wb = load_workbook(ruta)
+    ws_r09 = wb["R09"]
+    ws_r10 = wb["R10"]
+    limpiar_r09(ws_r09)
+    exportar_r09(ws_r09, consultas)
+    actualizar_r10(ws_r10)
 
-    writer = pd.ExcelWriter(output, engine="xlsxwriter")
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response["Content-Disposition"] = 'attachment; filename="R09.xlsx"'
 
-    df.to_excel(writer, sheet_name=f"R09_Semestre {periodo}", index=False)
-    tabla.to_excel(writer, sheet_name="R10", index=False)
-
-    workbook = writer.book
-    worksheet = writer.sheets["R10"]
-
-    columnas = {col: i for i, col in enumerate(tabla.columns)}
-
-    crear_grafica(workbook, worksheet, tabla, columnas,
-                  ["Bajo_peso", "Peso_ideal", "Sobrepeso", "Obesidad"],
-                  "ÍNDICE DE MASA CORPORAL", "B18")
-
-    crear_grafica(workbook, worksheet, tabla, columnas,
-                  ["Alcoholismo", "Tabaquismo"],
-                  "ADICCIONES", "P25")
-
-    crear_grafica(workbook, worksheet, tabla, columnas,
-                  ["Vista_normal", "Usa_lentes"],
-                  "AGUDEZA VISUAL", "B38")
-
-    crear_grafica(workbook, worksheet, tabla, columnas,
-                  ["Matricula_año", "Expediente_clinico"],
-                  "GRÁFICA COMPARATIVA MEDICINA PREVENTIVA", "P8")
-
-    writer.close()
-
-    return output
+    wb.save(response)
+    
+    return response
