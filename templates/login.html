@@ -8,69 +8,81 @@
 {% block title %} Login {% endblock %}
 
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
-        <body class="bg-light">
-            <div class="container d-flex flex-column flex-md-row justify-content-center align-items-center vh-100">
-                {% comment %} Imagen del logo {% endcomment %}
-                <div class="text-center mb-4 mb-md-0">
-                    <img src="{% static 'imgs/logoV2_SF.png' %}" class="img-fluid" style="max-width: 80%; height: auto;">
-                </div>
+<form method="POST">
+    {% csrf_token %}
 
-                {% comment %} Card del login {% endcomment %}
-                <div class="card shadow-lg p-4" style="max-width: 400px; width: 100%;">
-                    {% comment %} Mensajes {% endcomment %}
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-danger d-flex align-items-center" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+    <div class="container d-flex flex-column justify-content-center align-items-center vh-100">
 
-                    <h2 class="text-center mb-4">Iniciar Sesión</h2>
-                    {% comment %} Inputs {% endcomment %}
-                    <div class="mb-3">
-                        <label for="{{ form.clave.id_for_label }}" class="form-label">Matrícula o número de trabajador:</label>
-                        {{ form.clave }}
-                        {% if form.clave.errors %}
-                            <div class="text-danger">
-                                {{ form.clave.errors.0 }}
-                            </div>
-                        {% endif %}
+        <!-- Logo -->
+        <div class="text-center mb-4">
+            <img src="{% static 'imgs/SL.png' %}" 
+                 class="img-fluid" 
+                 style="max-width: 350px; height: auto;">
+        </div>
+
+        <!-- Card del login -->
+        <div class="card shadow-lg p-4" style="max-width: 400px; width: 100%;">
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
+                {% endfor %}
+            {% endif %}
 
-                    <!-- Campo de contraseña -->
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Contraseña:</label>
-                        {{ form.password }}
-                        {% if form.password.errors %}
-                            <div class="text-danger">
-                                {{ form.password.errors.0 }}
-                            </div>
-                        {% endif %}
-                        <div class="form-check mt-2">
-                            <input type="checkbox" id="showPassword" class="form-check-input">
-                            <label for="showPassword" class="text-muted">Mostrar contraseña</label>
-                        </div>
+            <h2 class="text-center mb-4">Iniciar Sesión</h2>
+
+            <!-- Usuario -->
+            <div class="mb-3">
+                <label for="{{ form.clave.id_for_label }}" class="form-label">
+                    Matrícula o número de trabajador:
+                </label>
+                {{ form.clave }}
+                {% if form.clave.errors %}
+                    <div class="text-danger">
+                        {{ form.clave.errors.0 }}
                     </div>
+                {% endif %}
+            </div>
 
-                    <!-- Botón de envío -->
-                    <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
-                    <button type="button" class="btn btn-link w-100 mt-2">¿Olvidaste tu contraseña?</button>
+            <!-- Contraseña -->
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña:</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="text-danger">
+                        {{ form.password.errors.0 }}
+                    </div>
+                {% endif %}
+
+                <div class="form-check mt-2">
+                    <input type="checkbox" id="showPassword" class="form-check-input">
+                    <label for="showPassword" class="text-muted">
+                        Mostrar contraseña
+                    </label>
                 </div>
             </div>
-        </body>
-    </form>
 
-    <!-- Script para mostrar/ocultar contraseña -->
-    <script>
-        document.getElementById("showPassword").addEventListener("change", function() {
-            let passwordField = document.getElementById("password");
-            if (passwordField) {
-                passwordField.type = this.checked ? "text" : "password";
-            }
-        });
-    </script>
+            <!-- Botones -->
+            <button type="submit" class="btn btn-primary w-100">
+                Iniciar Sesión
+            </button>
+            <button type="button" class="btn btn-link w-100 mt-2">
+                ¿Olvidaste tu contraseña?
+            </button>
+
+        </div>
+    </div>
+</form>
+
+<script>
+    document.getElementById("showPassword").addEventListener("change", function() {
+        let passwordField = document.getElementById("password");
+        if (passwordField) {
+            passwordField.type = this.checked ? "text" : "password";
+        }
+    });
+</script>
 {% endblock %}
