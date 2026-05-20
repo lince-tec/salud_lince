@@ -1,7 +1,5 @@
-import pandas as pd
 import os
 from django.conf import settings
-from datetime import datetime
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from apps.usuarios.decorators import role_required
@@ -9,15 +7,14 @@ from openpyxl import load_workbook
 from openpyxl.cell.cell import MergedCell
 
 from apps.consultas.models import Consulta
-from apps.usuarios.models import HistorialMedico
 
-#Fiunciones auxiliares
+# Funciones auxiliares
 def si_no(valor):
     return "SI" if valor else "No"
     
 def clasificar_imc(imc):
     if imc is None:
-        return " "
+        return ""
     if imc < 18.5:
         return "BP"
     elif 18.5 <= imc < 25:
@@ -58,7 +55,7 @@ def obtener_consultas(periodo, anio, mes=None, trimestre=None):
     else:
         return None
     
-    return consultas.select_related("clave_paciente", "signos_vitales").order_by("fecha")
+    return consultas.select_related("clave_paciente", "signos_vitales", "categoria_de_padecimiento").order_by("fecha")
 
 #función para limpar R09
 def limpiar_r09(ws):
@@ -95,8 +92,7 @@ def exportar_r09(ws, consultas):
         ws[f"O{fila_excel}"] = signos.imc if signos else ""
         ws[f"P{fila_excel}"] = si_no(historial and historial.usa_drogas)
         ws[f"Q{fila_excel}"] = f"=F{fila_excel}/(G{fila_excel}*G{fila_excel})"
-        ws[f"R{fila_excel}"] = consulta.categoria_de_padecimiento.padecimiento if hasattr(consulta, "categoria_de_padecimiento") else ""
-        
+        ws[f"R{fila_excel}"] = (consulta.categoria_de_padecimiento.padecimiento if consulta.categoria_de_padecimiento else "")
         consecutivo += 1
         fila_excel += 1
 
@@ -112,10 +108,10 @@ def actualizar_r10(ws):
     }
 
     for fila, valores in datos.items():
-        matricula, experdiente = valores
+        matricula, expediente = valores
 
         ws[f"D{fila}"] = matricula
-        ws[f"E{fila}"] = experdiente
+        ws[f"E{fila}"] = expediente
     
     
 
@@ -134,13 +130,15 @@ def descargar_reporte_r09(request):
     if consultas is None:
         return HttpResponse("Periodo no válido")
     
-    ruta = os.path.join(
-        settings.BASE_DIR,
-        "plantilla_reporte",
-        "R09.xlsx"
-    )
-
-    wb = load_workbook(ruta)
+    ruta = settings.RUTA_PLANTILLA_R09
+    
+    if not os.path.exists(ruta):
+        return HttpResponse("Archivo de plantilla R09 no encontrado")
+    try:
+        wb = load_workbook(ruta)
+    except Exception as e:
+        return HttpResponse(f"Error al cargar la plantilla: {str(e)}")
+    
     ws_r09 = wb["R09"]
     ws_r10 = wb["R10"]
     limpiar_r09(ws_r09)
