@@ -14,6 +14,7 @@ urlpatterns = [
     path('', include('apps.usuarios.urls')),
     path('consultas/', include('apps.consultas.urls')),
     path('reportes/', include('apps.reportes.urls')),
+    path('lincybot/', include('chatbot.urls')),
 ]
 
 if settings.DEBUG:
