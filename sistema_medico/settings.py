@@ -94,7 +94,7 @@ if DEBUG:
 else:
     print("Estas en modo producción con la base de datos remota")
     DATABASES = {
-        'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+        'default': dj_database_url.config()
     }
 
 # Para que Django use el modelo "Usuario"
