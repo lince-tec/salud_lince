@@ -20,9 +20,9 @@ urlpatterns = [
     path( "medico/editar_historial/<str:pk>/", views.editar_historial_view, name="editar_historial", ),
 
     path("recuperar/", auth_views.PasswordResetView.as_view(template_name="contrasena/recuperar_contrasena.html", email_template_name= "contrasena/email_recuperacion.html", form_class=RecuperarPasswordForm), name="password_reset",),
-    path("recuperar/enviado", auth_views.PasswordResetDoneView.as_view(template_name="contrasena/recuperar_enviado.html"), name="password_reset_done",),
+    path("recuperar/enviado/", auth_views.PasswordResetDoneView.as_view(template_name="contrasena/recuperar_enviado.html"), name="password_reset_done",),
     path("recuperar/<uidb64>/<token>/", auth_views.PasswordResetConfirmView.as_view(template_name="contrasena/confirmar_contrasena.html"), name="password_reset_confirm",),
-    path("recuperar/completo", auth_views.PasswordResetCompleteView.as_view(template_name="contrasena/recuperacion_completa.html"), name="password_reset_complete",),
+    path("recuperar/completo/", auth_views.PasswordResetCompleteView.as_view(template_name="contrasena/recuperacion_completa.html"), name="password_reset_complete",),
 
 
 ]
