@@ -80,7 +80,8 @@ WSGI_APPLICATION = 'sistema_medico.wsgi.application'
 #https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-        'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+        'default': dj_database_url.config(default=os.getenv('DATABASE_URL'), ssl_require=True)
+        
     }
 print("DATABASE_URL:", os.getenv('DATABASE_URL'))
 
