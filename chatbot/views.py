@@ -1,65 +1,42 @@
-from django.shortcuts import render
+import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import json
-
-from .services import procesar_mensaje
-
-
-# =========================
-# VISTA PRINCIPAL
-# =========================
-
-def chatbot_view(request):
-
-    return render(
-        request,
-        'chatbot/chatbot.html'
-    )
-
-
-# =========================
-# API DEL CHATBOT
-# =========================
+from .services.chatbot_engine import procesar_mensaje
+from .services.respuestas import obtener_respuesta_unica
 
 @csrf_exempt
 def consultar_chatbot(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "No permitido"}, status=405)
 
-    if request.method == 'POST':
+    try:
+        data = json.loads(request.body)
+        mensaje = data.get("mensaje", "")
+        rol = data.get("rol", "invitado")
 
-        try:
+        ultimo_intent = request.session.get("ultimo_intent")
+        historial = request.session.get("historial_respuestas", [])
 
-            data = json.loads(request.body)
+        resultado = procesar_mensaje(mensaje, rol=rol, contexto=ultimo_intent)
+        intent_actual = resultado["intent"]
 
-            mensaje = data.get('mensaje', '')
+        # MANEJO DE RESPUESTAS ESPECIALES
+        if intent_actual == "restriccion":
+            respuesta_final = "Lo siento, esta información es solo para pacientes. ¡Por favor, inicia sesión!"
+        elif intent_actual == "vacio":
+            respuesta_final = "Dime algo, estoy aquí para ayudarte con Salud Lince."
+        else:
+            # Aquí entra la respuesta única (incluyendo 'desconocido')
+            respuesta_final = obtener_respuesta_unica(intent_actual, historial)
+        
+        resultado["respuesta"] = respuesta_final
 
-            # =========================
-            # VALIDAR USUARIO
-            # =========================
+        # ACTUALIZAR SESIÓN
+        request.session["ultimo_intent"] = intent_actual
+        historial.append(respuesta_final)
+        request.session["historial_respuestas"] = historial[-5:]
 
-            rol = "invitado"
+        return JsonResponse(resultado)
 
-            if request.user.is_authenticated:
-
-                rol = "paciente"
-
-            resultado = procesar_mensaje(
-                mensaje=mensaje,
-                rol=rol
-            )
-
-            return JsonResponse(resultado)
-
-        except Exception as e:
-
-            return JsonResponse({
-                'respuesta': f'Error: {str(e)}',
-                'intent': 'error',
-                'opciones': []
-            })
-
-    return JsonResponse({
-        'respuesta': 'Método no permitido',
-        'intent': 'error',
-        'opciones': []
-    })
+    except Exception as e:
+        return JsonResponse({"respuesta": f"Error: {str(e)}", "intent": "error"}, status=500)
