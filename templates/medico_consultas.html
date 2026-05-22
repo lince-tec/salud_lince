@@ -52,7 +52,7 @@
         <a href="?todas=0" class="btn btn-primary">Mostrar solo mis consultas</a>
         <form method="GET" class="mb-3"> <!--Formulario que contiene las opciones busqueda-->
           <input type = "hidden" name = "todas" value ="1">
-          <div class="row g-3 d-flex justify-content-center align-items-center mb-4 mt-3">
+          <div class="row  g-3 d-flex justify-content-center align-items-end mb-4 mt-3">
                 <div class="col-12 col-sm-6 col-md-3 col-lg-2">
                     <label for="clave_paciente" class="form-label">Clave del Paciente:</label>
                     <input type="text" class="form-control" id="clave_paciente" name="clave_paciente" value="{{ request.GET.clave_paciente }}">
@@ -76,7 +76,7 @@
     {% else %}
         <a href="?todas=1" class="btn btn-secondary">Mostrar todas las consultas</a>
         <form method="GET" class="mb-3"> <!--Formulario que contiene las opciones busqueda-->
-            <div class="row g-3 d-flex justify-content-center align-items-center mb-4 mt-3">
+            <div class="row g-3 d-flex justify-content-center align-items-end mb-4 mt-3">
                 <div class="col-12 col-sm-6 col-md-3 col-lg-2">
                     <label for="clave_paciente" class="form-label">Clave del Paciente:</label>
                     <input type="text" class="form-control" id="clave_paciente" name="clave_paciente" value="{{ request.GET.clave_paciente }}">
