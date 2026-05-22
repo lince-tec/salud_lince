@@ -10,7 +10,7 @@
 {% block content %}
 
     <h2 clss="modal-title fuente-seasons">Estadísticas de pacientes</h2>
-    <form method="get" action="{% url 'reporte_r09' %}">
+    <form method="get" action="{% url 'reporte_r09' %}" class="mb-4 mt-2">
         <!-- Tipo de periodo -->
         <label>Periodo:</label>
         <select name="periodo" id="periodo" class="form-select">
@@ -57,6 +57,7 @@
         </button>
 
     </form>
+
     <div class="card mb-4">
         <div class="card-body">
             <div>{{ genero_pastel|safe }}</div>
