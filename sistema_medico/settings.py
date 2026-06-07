@@ -15,7 +15,8 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+#DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1','web-production-b3d8.up.railway.app']
 
@@ -80,11 +81,23 @@ WSGI_APPLICATION = 'sistema_medico.wsgi.application'
 # Database
 #https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-        'default': dj_database_url.config(default=os.getenv('DATABASE_URL'), ssl_require=True)
-        
+if DEBUG:
+    print("Estas en modo DEBUG con la base de datos local")
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.getenv('NAME_BD'),
+            'USER': os.getenv('USER_BD'),
+            'PASSWORD': os.getenv('PASSWORD_BD'),
+            'HOST': os.getenv('HOST_BD'),
+            'PORT': os.getenv('PORT_BD'),
+        }
     }
-print("DATABASE_URL:", os.getenv('DATABASE_URL'))
+else:
+    print("Estas en modo producción con la base de datos remota")
+    DATABASES = {
+        'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+    }
 
 # Para que Django use el modelo "Usuario"
 # en lugar del modelo predeterminado "user"
@@ -182,16 +195,12 @@ MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp-relay.brevo.com"
-EMAIL_PORT = 465
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-EMAIL_TIMEOUT = 30  # Tiempo de espera para la conexión SMTP en segundos
-PASSWORD_RESET_TIMEOUT = 3600  # Tiempo de validez del token de recuperación (1 hora)
+EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
+ANYMAIL = {
+    "BREVO_API_KEY": os.getenv('BREVO_API_KEY'),
+}
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+PASSWORD_RESET_TIMEOUT = 3600  # 1 hora 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 RUTA_PLANTILLA_R09 = BASE_DIR / 'plantilla_reporte' / 'R09.xlsx'
