@@ -81,23 +81,9 @@ WSGI_APPLICATION = 'sistema_medico.wsgi.application'
 # Database
 #https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-if DEBUG:
-    print("Estas en modo DEBUG con la base de datos local")
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.getenv('NAME_BD'),
-            'USER': os.getenv('USER_BD'),
-            'PASSWORD': os.getenv('PASSWORD_BD'),
-            'HOST': os.getenv('HOST_BD'),
-            'PORT': os.getenv('PORT_BD'),
-        }
-    }
-else:
-    print("Estas en modo producción con la base de datos remota")
-    DATABASES = {
-        'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
-    }
+DATABASES = {
+        'default': dj_database_url.config(default=os.getenv('DATABASE_URL'), ssl_require=True)
+}
 
 # Para que Django use el modelo "Usuario"
 # en lugar del modelo predeterminado "user"
